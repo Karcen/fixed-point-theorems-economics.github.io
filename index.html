@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不动点定理 · Fixed Point Theorems in Economics</title>
+
+<!-- ===== MathJax ===== -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      tags: 'none'
+    },
+    chtml: { scale: 1.02, matchFontHeight: false },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      enableMenu: false
+    },
+    startup: {
+      ready: function () {
+        MathJax.startup.defaultReady();
+        MathJax.startup.promise.then(function () {
+          document.body.classList.add('mj-ready');
+        });
+      }
+    }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --canvas-bg: #ffffff;
+    --text: #0a0a0a;
+    --text-soft: #2a2a2a;
+    --muted: #6b6b6b;
+    --rule: #e6e6e6;
+    --rule-strong: #cccccc;
+    --accent: #1a3a8f;
+    --accent-soft: #eaeefb;
+    --ochre: #b07d2b;
+    --crimson: #b91c1c;
+    --teal: #1f6e63;
+    --vec: #1a3a8f;
+    --grid: #ededed;
+    --code-bg: #f6f6f6;
+    --serif: "Iowan Old Style", "Sitka Text", "Charter", "Bitstream Charter", "Source Serif Pro", Cambria, Georgia, serif;
+    --sans: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a0a0b;
+      --panel: #141417;
+      --canvas-bg: #141417;
+      --text: #f1f1f0;
+      --text-soft: #d6d6d4;
+      --muted: #8a8a86;
+      --rule: #232327;
+      --rule-strong: #383840;
+      --accent: #93b1ff;
+      --accent-soft: #1a2447;
+      --ochre: #d9a557;
+      --crimson: #ef5a4a;
+      --teal: #5fc9b5;
+      --vec: #93b1ff;
+      --grid: #1c1c20;
+      --code-bg: #1a1a1e;
+    }
+  }
+  /* Manual override: data-theme="dark" forces dark, data-theme="light" forces light */
+  :root[data-theme="dark"] {
+    --bg: #0a0a0b;
+    --panel: #141417;
+    --canvas-bg: #141417;
+    --text: #f1f1f0;
+    --text-soft: #d6d6d4;
+    --muted: #8a8a86;
+    --rule: #232327;
+    --rule-strong: #383840;
+    --accent: #93b1ff;
+    --accent-soft: #1a2447;
+    --ochre: #d9a557;
+    --crimson: #ef5a4a;
+    --teal: #5fc9b5;
+    --vec: #93b1ff;
+    --grid: #1c1c20;
+    --code-bg: #1a1a1e;
+  }
+  /* :root[data-theme="light"] uses the defaults in :root above */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.65;
+    padding: 40px 20px 60px;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* ====== Header ====== */
+  header.top {
+    text-align: center;
+    padding: 10px 0 40px;
+    margin-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ornament {
+    color: var(--ochre);
+    letter-spacing: 0.4em;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  header.top h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.85rem, 3.5vw, 2.6rem);
+    margin: 14px 0 6px;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  header.top .en {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  header.top .by {
+    margin-top: 16px;
+    font-size: 0.74rem;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* ====== Theorem block ====== */
+  .theorem {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 30px 30px 26px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .theorem::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--ochre);
+  }
+  .theorem-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .theorem-num {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ochre);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+  .theorem h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+  .theorem .en-title {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+
+  /* ====== Interactive layout ====== */
+  .layout {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    body { padding: 24px 14px 60px; }
+    .theorem { padding: 22px 18px; }
+  }
+  .canvas-wrap {
+    background: var(--canvas-bg);
+    border: 1px solid var(--rule-strong);
+    border-radius: 2px;
+    padding: 6px;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 380px;
+    touch-action: none;
+    cursor: crosshair;
+  }
+  #brouwerCanvas { cursor: grab; }
+  #brouwerCanvas:active { cursor: grabbing; }
+  #kakutaniCanvas { cursor: default; }
+  .controls { display: flex; flex-direction: column; gap: 14px; }
+  .control label {
+    display: flex; justify-content: space-between;
+    font-size: 0.83rem; color: var(--muted);
+    margin-bottom: 5px; font-variant-numeric: tabular-nums;
+  }
+  .control label .v {
+    font-family: var(--mono); color: var(--text); font-size: 0.78rem;
+  }
+  .control input[type="range"] { width: 100%; accent-color: var(--accent); height: 4px; }
+  .check {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.86rem; color: var(--text); cursor: pointer; user-select: none;
+  }
+  .check input { accent-color: var(--accent); }
+  button {
+    background: var(--accent); color: white; border: 1px solid var(--accent);
+    padding: 8px 14px; border-radius: 2px; cursor: pointer;
+    font-size: 0.86rem; font-family: var(--sans); font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  button:hover { opacity: 0.88; }
+  button.ghost {
+    background: transparent; color: var(--text); border: 1px solid var(--rule-strong);
+  }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hint {
+    font-size: 0.78rem; color: var(--muted); font-style: italic;
+    line-height: 1.55;
+    border-left: 2px solid var(--ochre); padding-left: 10px; margin-top: 4px;
+  }
+
+  /* ====== Brief intuition ====== */
+  .explain {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+  }
+  @media (max-width: 760px) { .explain { grid-template-columns: 1fr; gap: 16px; } }
+  .explain .col { font-size: 0.93rem; }
+  .explain .tag {
+    display: inline-block;
+    font-family: var(--mono); font-size: 0.65rem;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 2px 7px; border-radius: 2px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-right: 8px; vertical-align: 1px;
+  }
+  .explain p { margin: 0 0 6px; }
+  .explain p + p { margin-top: 8px; color: var(--muted); }
+  .explain b { color: var(--text); font-weight: 600; }
+
+  /* ====== Formal section ====== */
+  .formal {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  .formal h3 {
+    font-family: var(--serif);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    letter-spacing: 0.005em;
+    color: var(--text);
+  }
+  .formal h3:first-child { margin-top: 0; }
+  .formal h3 .h3-en {
+    font-style: italic;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 8px;
+    font-size: 0.95rem;
+  }
+  .formal h4 {
+    font-family: var(--serif);
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin: 18px 0 8px;
+    color: var(--text);
+  }
+  .formal h4 .meta {
+    font-style: italic;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.86em;
+    margin-left: 6px;
+  }
+  .formal p {
+    margin: 0 0 10px;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+  .lang-label {
+    display: inline-block;
+    font-family: var(--mono); font-size: 0.62rem;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 2px 6px; border-radius: 2px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-right: 8px; vertical-align: 2px;
+    font-weight: 600;
+  }
+  .stmt {
+    padding: 14px 18px;
+    background: var(--code-bg);
+    border-left: 3px solid var(--ochre);
+    border-radius: 2px;
+    margin: 0 0 10px;
+    color: var(--text);
+    line-height: 1.85;
+  }
+  .qed { color: var(--ochre); font-style: normal; padding-left: 6px; font-weight: 600; }
+  .formal em, .stmt em, .formal i { font-style: italic; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--text);
+  }
+
+  /* MathJax */
+  mjx-container { color: var(--text) !important; }
+  mjx-container[display="true"] { margin: 16px 0 !important; }
+  /* Hide raw LaTeX briefly while MathJax loads */
+  body:not(.mj-ready) .formal p,
+  body:not(.mj-ready) .stmt,
+  body:not(.mj-ready) .explain p {
+    visibility: hidden;
+  }
+  body.mj-ready .formal p,
+  body.mj-ready .stmt,
+  body.mj-ready .explain p {
+    visibility: visible;
+  }
+
+  /* ====== Footer ====== */
+  footer.bot {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--serif);
+    color: var(--muted);
+  }
+  footer.bot .epigraph {
+    font-style: italic;
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
+    font-size: 0.95rem;
+  }
+  footer.bot .credit {
+    font-family: var(--sans);
+    font-size: 0.86rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  footer.bot .credit a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+    padding-bottom: 1px;
+  }
+  footer.bot .credit a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--text); }
+
+  /* ====== Theme toggle ====== */
+  .theme-toggle {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--rule-strong);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 100;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    transform: scale(1.06);
+  }
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* Default (light): show moon (= "click to go dark") */
+  .theme-toggle .icon-sun { display: none; }
+  .theme-toggle .icon-moon { display: block; }
+  /* System dark (and not overridden to light): show sun */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+  }
+  /* Manual override */
+  :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+  @media (max-width: 760px) {
+    .theme-toggle { top: 12px; right: 12px; width: 34px; height: 34px; }
+    .theme-toggle svg { width: 16px; height: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Theme toggle ===== -->
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="切换主题 / Toggle theme">
+  <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <svg class="icon-sun" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4"/>
+    <line x1="12" y1="2" x2="12" y2="4"/>
+    <line x1="12" y1="20" x2="12" y2="22"/>
+    <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/>
+    <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>
+    <line x1="2" y1="12" x2="4" y2="12"/>
+    <line x1="20" y1="12" x2="22" y2="12"/>
+    <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/>
+    <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/>
+  </svg>
+</button>
+
+<script>
+  // Restore saved theme override (if any)
+  (function () {
+    let saved = null;
+    try { saved = localStorage.getItem('fpt-theme'); } catch (e) {}
+    if (saved === 'dark' || saved === 'light') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  })();
+</script>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="ornament">— Mathematical Economics —</div>
+    <h1>经济学中的不动点定理</h1>
+    <div class="en">Fixed Point Theorems in Economics</div>
+    <div class="by">Brouwer · Kakutani · Banach</div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- I. Brouwer                                                    -->
+  <!-- ============================================================ -->
+  <section class="theorem" id="brouwer">
+    <div class="theorem-head">
+      <span class="theorem-num">Theorem I.</span>
+      <h2>布劳威尔不动点定理</h2>
+      <span class="en-title">Brouwer Fixed Point Theorem</span>
+    </div>
+
+    <div class="layout">
+      <div class="canvas-wrap"><canvas id="brouwerCanvas"></canvas></div>
+      <div class="controls">
+        <div class="control">
+          <label>收缩系数 α  <span class="v" id="bAlphaVal">0.70</span></label>
+          <input id="bAlpha" type="range" min="0" max="0.95" step="0.01" value="0.70">
+        </div>
+        <div class="control">
+          <label>旋转角 θ  <span class="v" id="bThetaVal">0°</span></label>
+          <input id="bTheta" type="range" min="-180" max="180" step="1" value="0">
+        </div>
+        <div class="btn-row"><button id="bReset" class="ghost">重置 / Reset</button></div>
+        <p class="hint">拖动红色不动点改变其位置。箭头表示位移 <code>f(x) − x</code>;箭头消失之处即为不动点。<br>Drag the red dot. Arrows show <code>f(x) − x</code>; they vanish at the fixed point.</p>
+      </div>
+    </div>
+
+    <div class="explain">
+      <div class="col">
+        <p><span class="tag">CN</span><b>核心思想。</b>非空紧致凸集上的连续自映射必有不动点——这是一个纯<b>拓扑保证</b>。</p>
+        <p>这里的映射是绕 $x^*$ 的旋转-收缩 $f(x) = x^* + \alpha\,R(\theta)(x - x^*)$。无论你怎么拖动 $x^*$ 或转动角度,<b>不动点必然存在</b>。</p>
+      </div>
+      <div class="col">
+        <p><span class="tag">EN</span><b>Core idea.</b> Every continuous self-map of a non-empty compact convex set has a fixed point — a purely <b>topological</b> guarantee.</p>
+        <p>The map shown is a rotation-contraction $f(x) = x^* + \alpha\,R(\theta)(x - x^*)$ about a draggable centre. The fixed point persists under every continuous deformation.</p>
+      </div>
+    </div>
+
+    <div class="formal">
+
+      <h3>定理 <span class="h3-en">· Theorem</span></h3>
+      <p class="stmt"><span class="lang-label">EN</span>Let $K \subset \mathbb{R}^n$ be a non-empty, compact, convex set and let $f: K \to K$ be continuous. Then there exists $x^* \in K$ with $f(x^*) = x^*$.</p>
+      <p class="stmt"><span class="lang-label">CN</span>设 $K \subset \mathbb{R}^n$ 为非空紧致凸集,$f: K \to K$ 连续。则存在 $x^* \in K$ 使 $f(x^*) = x^*$。</p>
+
+      <h3>证明 <span class="h3-en">· Proof</span></h3>
+
+      <h4>English Proof <span class="meta">— via the no-retraction theorem</span></h4>
+      <p>It suffices to prove the result for the closed unit ball $B^n = \{ x \in \mathbb{R}^n : \|x\| \le 1 \}$, since any non-empty compact convex set in $\mathbb{R}^n$ is homeomorphic to $B^k$ for some $k \le n$, and the existence of a fixed point is preserved under homeomorphism.</p>
+      <p>Suppose, for contradiction, that $f : B^n \to B^n$ is continuous and has <em>no</em> fixed point: $f(x) \ne x$ for all $x$. Define</p>
+      <p>$$ r(x) \;=\; x + t(x)\bigl(x - f(x)\bigr), $$</p>
+      <p>where $t(x) \ge 0$ is the unique non-negative scalar making $\|r(x)\| = 1$. Geometrically, $r(x)$ is the point at which the ray from $f(x)$ through $x$ meets the boundary $S^{n-1}$. Because $x \ne f(x)$ everywhere, $t(x)$ is well-defined and continuous, hence $r : B^n \to S^{n-1}$ is continuous. Moreover, if $x \in S^{n-1}$, the ray exits $B^n$ at $x$ itself, so $r(x) = x$.</p>
+      <p>Therefore $r$ is a continuous retraction of $B^n$ onto $S^{n-1}$. But the <em>no-retraction theorem</em> — a standard consequence of $\widetilde H_{n-1}(B^n) = 0$ while $\widetilde H_{n-1}(S^{n-1}) \cong \mathbb{Z}$ — forbids such a map. Contradiction. Hence some fixed point must exist. <span class="qed">∎</span></p>
+
+      <h4>中文证明 <span class="meta">— 基于 Sperner 引理的组合方法</span></h4>
+      <p>不失一般性,把 $K$ 取为标准单纯形 $\Delta^n = \{ x \in \mathbb{R}^{n+1}_{\ge 0} : \sum_{i=0}^{n} x_i = 1 \}$。给定连续映射 $f: \Delta^n \to \Delta^n$,对 $\Delta^n$ 作 $k$ 重重心剖分,得到细网格 $\mathcal{T}_k$。</p>
+      <p><b>标号规则。</b>对每个顶点 $v$,赋一个标号 $\ell(v) \in \{0,1,\dots,n\}$,要求</p>
+      <p>$$ \ell(v) \in \{\, i : v_i > 0 \;\text{且}\; f(v)_i \le v_i \,\}. $$</p>
+      <p>此集合非空——若不然,$f(v)_i > v_i$ 对所有 $v_i > 0$ 的指标 $i$ 成立,从而 $\sum_i f(v)_i > \sum_i v_i = 1$,与 $f(v) \in \Delta^n$ 矛盾。再要求位于 $\Delta^n$ 第 $j$ 面 $\{x_j = 0\}$ 上的顶点其标号不为 $j$,这是合法约束。</p>
+      <p><b>Sperner 引理。</b>在此标号下,存在一个"完整"的小单纯形 $T_k$——其 $n+1$ 个顶点恰好取齐 $\{0,1,\dots,n\}$ 的全部标号。</p>
+      <p><b>取极限。</b>设 $T_k$ 的顶点为 $v_0^{(k)},\dots,v_n^{(k)}$,标号 $i$ 在 $v_i^{(k)}$ 处取到。$k\to\infty$ 时单纯形直径趋于零,经子列设 $v_i^{(k)} \to x^*$。由标号定义</p>
+      <p>$$ f\bigl(v_i^{(k)}\bigr)_i \;\le\; \bigl(v_i^{(k)}\bigr)_i \quad \text{对每个 } i. $$</p>
+      <p>取 $k \to \infty$,由 $f$ 连续得 $f(x^*)_i \le x^*_i$ 对所有 $i$。再由 $\sum_i f(x^*)_i = \sum_i x^*_i = 1$,各分量必须取等号,故 $f(x^*) = x^*$。<span class="qed">∎</span></p>
+
+      <h3>经济学应用 <span class="h3-en">· Economic Application — Walrasian Equilibrium</span></h3>
+
+      <h4>EN — Existence of competitive equilibrium</h4>
+      <p>Consider an exchange economy with $L$ goods, prices $p \in \Delta = \{ p \in \mathbb{R}^L_+ : \sum_\ell p_\ell = 1 \}$, and aggregate excess demand $z(p)$ satisfying continuity, homogeneity, and Walras' law $p \cdot z(p) = 0$. Define the <em>price-adjustment map</em></p>
+      <p>$$ T(p)_\ell \;=\; \frac{p_\ell + \max\{0,\, z_\ell(p)\}}{1 + \sum_{\ell'} \max\{0,\, z_{\ell'}(p)\}}. $$</p>
+      <p>$T : \Delta \to \Delta$ is continuous. By Brouwer's theorem there exists $p^* = T(p^*)$. Multiplying both sides by $z_\ell(p^*)$, summing over $\ell$, and applying Walras' law forces $\max\{0, z_\ell(p^*)\} = 0$ for every $\ell$ — that is, supply meets demand in every market.</p>
+      <p><em>Intuition.</em> The map raises prices where there is excess demand and lowers them where there is excess supply (Walras' tâtonnement). The simplex is compact and convex; the adjustment is continuous; so Brouwer makes the equilibrium <em>topologically inevitable</em>. We cannot in general write $p^*$ down explicitly, but its existence is guaranteed by the geometry.</p>
+
+      <h4>CN —— 一般均衡的存在性</h4>
+      <p>设 $L$ 种商品的交换经济,价格在单纯形 $\Delta$ 上,超额需求 $z(p)$ 在标准假设下连续并满足 Walras 法则 $p \cdot z(p) = 0$。定义价格调整映射(同上),它把 $\Delta$ 连续地映到自身。由 Brouwer 定理,存在 $p^* = T(p^*)$,代数化简后即得 $z_\ell(p^*) \le 0$ 对所有 $\ell$ 成立——这正是市场出清条件。</p>
+      <p><em>直觉。</em>该映射"超额需求市场涨价、超额供给市场跌价"。几何上,单纯形紧致凸,调整过程连续,Brouwer 定理告诉我们:这种"撞墙必反弹"的连续过程一定存在静止点。我们不需要解出 $p^*$,<b>拓扑结构本身就保证了均衡的存在</b>——这就是 Arrow–Debreu (1954) 一般均衡存在性证明的核心思想。</p>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- II. Kakutani                                                  -->
+  <!-- ============================================================ -->
+  <section class="theorem" id="kakutani">
+    <div class="theorem-head">
+      <span class="theorem-num">Theorem II.</span>
+      <h2>角谷不动点定理</h2>
+      <span class="en-title">Kakutani Fixed Point Theorem</span>
+    </div>
+
+    <div class="layout">
+      <div class="canvas-wrap"><canvas id="kakutaniCanvas"></canvas></div>
+      <div class="controls">
+        <div class="control">
+          <label>跳跃位置 a  <span class="v" id="kAVal">0.50</span></label>
+          <input id="kA" type="range" min="0.10" max="0.90" step="0.01" value="0.50">
+        </div>
+        <div class="control">
+          <label>上分支 b₁  <span class="v" id="kB1Val">0.75</span></label>
+          <input id="kB1" type="range" min="0.50" max="0.95" step="0.01" value="0.75">
+        </div>
+        <div class="control">
+          <label>下分支 b₂  <span class="v" id="kB2Val">0.25</span></label>
+          <input id="kB2" type="range" min="0.05" max="0.50" step="0.01" value="0.25">
+        </div>
+        <label class="check">
+          <input id="kFunc" type="checkbox">
+          <span>退化为单值函数(去掉竖直填充)</span>
+        </label>
+        <p class="hint">关闭"竖直填充"后,函数与对角线 <code>y = x</code> 不再相交——Brouwer 失效。<br>Without the vertical fill, no fixed point exists; Kakutani fixes this for set-valued maps.</p>
+      </div>
+    </div>
+
+    <div class="explain">
+      <div class="col">
+        <p><span class="tag">CN</span><b>核心思想。</b>当一个普通函数有"跳跃"而越过对角线时,Brouwer 失效。Kakutani 允许在跳跃处填充<b>凸值集合</b>,只要这个集合与对角线相交,不动点就保住了。</p>
+        <p>这正是博弈论中"无差异时混合策略"的几何写照,也是 Nash 均衡存在性证明的基础。</p>
+      </div>
+      <div class="col">
+        <p><span class="tag">EN</span><b>Core idea.</b> If a discontinuous function jumps over the diagonal, Brouwer fails. Kakutani lets the graph be "filled in" with a convex segment at the jump — and this segment is forced to meet the diagonal.</p>
+        <p>This is the geometry of indifference in best-response correspondences, and the basis of Nash's existence theorem.</p>
+      </div>
+    </div>
+
+    <div class="formal">
+
+      <h3>定理 <span class="h3-en">· Theorem</span></h3>
+      <p class="stmt"><span class="lang-label">EN</span>Let $K \subset \mathbb{R}^n$ be non-empty, compact, convex, and let $\varphi: K \rightrightarrows K$ be a correspondence such that <em>(i)</em> $\varphi(x)$ is non-empty and convex for every $x \in K$, and <em>(ii)</em> $\varphi$ has a closed graph: $\mathrm{Gr}(\varphi) = \{(x,y) : y \in \varphi(x)\}$ is closed in $K \times K$. Then there exists $x^* \in K$ with $x^* \in \varphi(x^*)$.</p>
+      <p class="stmt"><span class="lang-label">CN</span>设 $K \subset \mathbb{R}^n$ 非空紧凸,对应 $\varphi: K \rightrightarrows K$ 满足 <em>(i)</em> $\varphi(x)$ 对每个 $x$ 非空且凸,<em>(ii)</em> $\varphi$ 的图 $\mathrm{Gr}(\varphi) = \{(x,y) : y \in \varphi(x)\}$ 在 $K \times K$ 中闭。则存在 $x^* \in K$ 使 $x^* \in \varphi(x^*)$。</p>
+
+      <h3>证明 <span class="h3-en">· Proof</span></h3>
+
+      <h4>English Proof <span class="meta">— via Brouwer + simplicial approximation</span></h4>
+      <p>For each integer $k \ge 1$, take a simplicial subdivision $\mathcal{T}_k$ of $K$ with mesh $\le 1/k$. At every vertex $v$ of $\mathcal{T}_k$, choose any $f_k(v) \in \varphi(v)$ (non-empty by (i)). Extend $f_k$ to all of $K$ by <em>barycentric linear interpolation</em> on each simplex: for $x = \sum_i \lambda_i v_i$ with $\lambda_i \ge 0$, $\sum_i \lambda_i = 1$, set $f_k(x) = \sum_i \lambda_i f_k(v_i)$.</p>
+      <p>Each $f_k(v) \in \varphi(v) \subset K$, and convexity of $K$ ensures $f_k(x) \in K$. Continuity is built into the construction, so $f_k: K \to K$ is continuous. By <b>Brouwer</b>, $f_k$ has a fixed point $x_k = f_k(x_k)$.</p>
+      <p>By compactness of $K$, pass to a subsequence so that $x_k \to x^*$. The point $x_k$ lies in some simplex of $\mathcal{T}_k$ with vertices $v_0^{(k)},\dots,v_n^{(k)}$, all within $1/k$ of $x_k$. Write</p>
+      <p>$$ x_k \;=\; \sum_{i=0}^{n} \lambda_i^{(k)}\, f_k\bigl(v_i^{(k)}\bigr), \qquad f_k\bigl(v_i^{(k)}\bigr) \in \varphi\bigl(v_i^{(k)}\bigr). $$</p>
+      <p>Pass to a further subsequence so that $\lambda_i^{(k)} \to \lambda_i^*$ and $f_k(v_i^{(k)}) \to y_i^*$. Since $v_i^{(k)} \to x^*$, $f_k(v_i^{(k)}) \to y_i^*$, and $(v_i^{(k)}, f_k(v_i^{(k)})) \in \mathrm{Gr}(\varphi)$, the <b>closed graph</b> hypothesis gives $y_i^* \in \varphi(x^*)$ for each $i$. Then <b>convexity</b> of $\varphi(x^*)$ yields</p>
+      <p>$$ x^* \;=\; \sum_i \lambda_i^*\, y_i^* \;\in\; \varphi(x^*). $$<span class="qed">∎</span></p>
+
+      <h4>中文证明 <span class="meta">— 经 Brouwer 逼近</span></h4>
+      <p>固定 $k \ge 1$,对 $K$ 作直径 $\le 1/k$ 的单纯形剖分 $\mathcal{T}_k$。对每个顶点 $v$,任取 $f_k(v) \in \varphi(v)$(由 (i) 非空),然后在每个小单纯形内对 $f_k$ 作重心线性延拓。由 $\varphi$ 值与 $K$ 的凸性,$f_k: K \to K$ 连续。</p>
+      <p>由 <b>Brouwer</b> 定理,$f_k$ 有不动点 $x_k$。$K$ 紧致,设子列 $x_k \to x^*$。$x_k$ 落在某小单纯形,其顶点 $v_0^{(k)},\dots,v_n^{(k)}$ 距 $x_k$ 不超过 $1/k$,于是</p>
+      <p>$$ x_k = \sum_{i=0}^n \lambda_i^{(k)}\, f_k\bigl(v_i^{(k)}\bigr), \quad f_k\bigl(v_i^{(k)}\bigr) \in \varphi\bigl(v_i^{(k)}\bigr). $$</p>
+      <p>再取子列使 $\lambda_i^{(k)} \to \lambda_i^*$、$f_k(v_i^{(k)}) \to y_i^*$。由 $v_i^{(k)} \to x^*$ 及<b>图闭性</b>,$y_i^* \in \varphi(x^*)$。再由 $\varphi(x^*)$ <b>凸</b>:</p>
+      <p>$$ x^* = \sum_i \lambda_i^*\, y_i^* \in \varphi(x^*). $$<span class="qed">∎</span></p>
+
+      <h3>经济学应用 <span class="h3-en">· Economic Application — Nash Equilibrium</span></h3>
+
+      <h4>EN — Existence of Nash equilibrium</h4>
+      <p>Consider a finite normal-form game with players $i = 1,\dots,n$, finite pure-action sets $A_i$, and expected payoffs $u_i: \prod_j \Delta(A_j) \to \mathbb{R}$ where $\Delta(A_j)$ is the simplex of mixed strategies. Let $\Sigma = \prod_i \Delta(A_i)$ — compact and convex. The <em>best-response correspondence</em></p>
+      <p>$$ \mathrm{BR}_i(\sigma_{-i}) \;=\; \arg\max_{\sigma_i \in \Delta(A_i)} u_i(\sigma_i, \sigma_{-i}) $$</p>
+      <p>is non-empty (continuous function on a compact set), convex (linear-in-$\sigma_i$ optimization), and has closed graph (Berge's maximum theorem). The joint correspondence $\mathrm{BR}(\sigma) = \prod_i \mathrm{BR}_i(\sigma_{-i})$ thus satisfies all of Kakutani's hypotheses on $\Sigma$. By Kakutani, there exists $\sigma^* \in \mathrm{BR}(\sigma^*)$ — that is, $\sigma_i^* \in \mathrm{BR}_i(\sigma_{-i}^*)$ for every $i$ — which is precisely the definition of a <b>Nash equilibrium</b> (Nash, 1950).</p>
+      <p><em>Intuition.</em> When a player is indifferent between several pure strategies, every mixture among them is a best response — so the best-response "function" is genuinely <em>set-valued</em>. Brouwer cannot handle this. Kakutani's contribution is exactly the right generalization: as long as the set-valued map is convex-valued and has a closed graph, the fixed-point conclusion survives. This is the geometry of the vertical fill in the visualization above: indifference becomes a vertical segment, which is forced by topology to meet the diagonal of "best response equals own strategy".</p>
+
+      <h4>CN —— Nash 均衡的存在性</h4>
+      <p>有限博弈的混合策略空间 $\Sigma = \prod_i \Delta(A_i)$ 紧致凸。每个玩家的最佳反应</p>
+      <p>$$ \mathrm{BR}_i(\sigma_{-i}) \;=\; \arg\max_{\sigma_i \in \Delta(A_i)} u_i(\sigma_i,\sigma_{-i}) $$</p>
+      <p>非空(连续函数在紧集有最大值)、凸(线性优化的解集是凸的),由 Berge 极值定理具有闭图。整体最佳反应 $\mathrm{BR}: \Sigma \rightrightarrows \Sigma$ 满足 Kakutani 的全部条件,故存在 $\sigma^* \in \mathrm{BR}(\sigma^*)$,即 <b>Nash 均衡</b>。</p>
+      <p><em>直觉。</em>当玩家对若干纯策略<b>无差异</b>时,任意混合都最优,最佳反应不再是函数而是一段"区间"——这正是上方可视化中那段竖直填充的经济含义。Brouwer 处理不了这种集合值跳跃,Kakutani 恰好是它的"集合值升级版"。Nash 论文里那句"this is an immediate corollary of Kakutani"就是这个意思:数学难度在 Kakutani,Nash 均衡的存在性几乎是它的一行推论。</p>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- III. Banach                                                   -->
+  <!-- ============================================================ -->
+  <section class="theorem" id="banach">
+    <div class="theorem-head">
+      <span class="theorem-num">Theorem III.</span>
+      <h2>巴拿赫不动点定理</h2>
+      <span class="en-title">Banach Fixed Point (Contraction Mapping) Theorem</span>
+    </div>
+
+    <div class="layout">
+      <div class="canvas-wrap"><canvas id="banachCanvas"></canvas></div>
+      <div class="controls">
+        <div class="control">
+          <label>压缩常数 L  <span class="v" id="nLVal">0.75</span></label>
+          <input id="nL" type="range" min="0.10" max="0.98" step="0.01" value="0.75">
+        </div>
+        <div class="control">
+          <label>旋转角 θ  <span class="v" id="nThetaVal">45°</span></label>
+          <input id="nTheta" type="range" min="-180" max="180" step="1" value="45">
+        </div>
+        <div class="btn-row">
+          <button id="nRun">迭代 / Iterate</button>
+          <button id="nReset" class="ghost">清空 / Clear</button>
+        </div>
+        <p class="hint">点击画布选择起点 <code>x₀</code>。轨迹以几何速率 <code>L</code> 收敛到不动点。<br>Click the canvas to pick <code>x₀</code>. The trajectory contracts toward <code>x*</code> at rate <code>L</code>.</p>
+      </div>
+    </div>
+
+    <div class="explain">
+      <div class="col">
+        <p><span class="tag">CN</span><b>核心思想。</b>完备度量空间上的压缩映射(Lipschitz 常数 $L < 1$)有<b>唯一</b>不动点;任意起点的迭代序列以 $L^n$ 速率收敛。</p>
+        <p>与 Brouwer/Kakutani 仅给"存在"不同,Banach 给出了一个<b>可计算</b>的算法——这正是动态规划里 Bellman 算子收敛性的来源。</p>
+      </div>
+      <div class="col">
+        <p><span class="tag">EN</span><b>Core idea.</b> A contraction on a complete metric space has a <b>unique</b> fixed point. Iterates from any starting point converge geometrically at rate $L$.</p>
+        <p>Where Brouwer and Kakutani only give existence, Banach gives a constructive algorithm: just iterate. This is exactly why the Bellman operator in dynamic programming converges to a unique value function.</p>
+      </div>
+    </div>
+
+    <div class="formal">
+
+      <h3>定理 <span class="h3-en">· Theorem</span></h3>
+      <p class="stmt"><span class="lang-label">EN</span>Let $(X, d)$ be a non-empty complete metric space and $T: X \to X$ a <em>contraction</em>: there exists $L \in [0, 1)$ with $d(T(x), T(y)) \le L\, d(x, y)$ for all $x, y \in X$. Then $T$ has a unique fixed point $x^* \in X$, and for every $x_0 \in X$ the iterates $x_{n+1} = T(x_n)$ satisfy $x_n \to x^*$ with the explicit error bound $d(x_n, x^*) \le \dfrac{L^n}{1-L}\, d(x_1, x_0)$.</p>
+      <p class="stmt"><span class="lang-label">CN</span>设 $(X, d)$ 是非空完备度量空间,$T: X \to X$ 是压缩映射(存在 $L \in [0,1)$ 使 $d(T(x), T(y)) \le L\, d(x,y)$)。则 $T$ 有唯一不动点 $x^*$,任意起点的迭代 $x_{n+1} = T(x_n)$ 收敛到 $x^*$,且 $d(x_n, x^*) \le \dfrac{L^n}{1-L}\, d(x_1, x_0)$。</p>
+
+      <h3>证明 <span class="h3-en">· Proof</span></h3>
+
+      <h4>English Proof</h4>
+      <p><em>Existence and convergence.</em> Fix $x_0 \in X$ and define $x_n = T^n(x_0)$. By induction on the contraction inequality,</p>
+      <p>$$ d(x_{n+1}, x_n) \;\le\; L\, d(x_n, x_{n-1}) \;\le\; \cdots \;\le\; L^n\, d(x_1, x_0). $$</p>
+      <p>For any $m > n$, the triangle inequality and the geometric series give</p>
+      <p>$$ d(x_m, x_n) \;\le\; \sum_{k=n}^{m-1} d(x_{k+1}, x_k) \;\le\; d(x_1, x_0) \sum_{k=n}^{m-1} L^k \;\le\; \frac{L^n}{1-L}\, d(x_1, x_0), $$</p>
+      <p>which tends to $0$ as $n \to \infty$. So $\{x_n\}$ is Cauchy, and by completeness $x_n \to x^* \in X$. Continuity of $T$ (immediate from the Lipschitz condition) gives</p>
+      <p>$$ T(x^*) = T\bigl(\lim x_n\bigr) = \lim T(x_n) = \lim x_{n+1} = x^*. $$</p>
+      <p><em>Uniqueness.</em> If $T(y^*) = y^*$ as well, then $d(x^*, y^*) = d(T(x^*), T(y^*)) \le L\, d(x^*, y^*)$, and $L < 1$ forces $d(x^*, y^*) = 0$.</p>
+      <p><em>Error bound.</em> Letting $m \to \infty$ in the Cauchy estimate above (with $n$ fixed) gives the stated bound. <span class="qed">∎</span></p>
+
+      <h4>中文证明</h4>
+      <p><em>存在性与收敛。</em>取 $x_0 \in X$,定义 $x_n = T^n(x_0)$。由压缩不等式迭代得 $d(x_{n+1}, x_n) \le L^n d(x_1, x_0)$。对 $m > n$,</p>
+      <p>$$ d(x_m, x_n) \;\le\; \sum_{k=n}^{m-1} d(x_{k+1}, x_k) \;\le\; \frac{L^n}{1-L}\, d(x_1, x_0) \;\xrightarrow{n\to\infty}\; 0, $$</p>
+      <p>故 $\{x_n\}$ 为 Cauchy 列,由完备性 $x_n \to x^* \in X$。$T$ Lipschitz 故连续,</p>
+      <p>$$ T(x^*) = T(\lim x_n) = \lim T(x_n) = \lim x_{n+1} = x^*. $$</p>
+      <p><em>唯一性。</em>若另有不动点 $y^*$,则 $d(x^*, y^*) = d(T(x^*), T(y^*)) \le L \cdot d(x^*, y^*)$,$L < 1$ 蕴含 $d(x^*, y^*) = 0$。</p>
+      <p><em>误差估计。</em>在 Cauchy 估计中令 $m \to \infty$ 即得。<span class="qed">∎</span></p>
+
+      <h3>经济学应用 <span class="h3-en">· Economic Application — Bellman Equation</span></h3>
+
+      <h4>EN — The Bellman equation in dynamic programming</h4>
+      <p>Consider an infinite-horizon discounted decision problem: state $s \in S$ (compact), action $a \in A(s)$, instantaneous reward $u(s,a)$ (continuous, bounded), transition $Q(\cdot \mid s, a)$ on $S$, discount factor $\beta \in [0, 1)$. The <em>value function</em> $V: S \to \mathbb{R}$ satisfies the <b>Bellman equation</b></p>
+      <p>$$ V(s) \;=\; \max_{a \in A(s)} \Bigl\{\, u(s, a) + \beta \int_S V(s')\, Q(ds' \mid s, a) \,\Bigr\} \;=:\; (T V)(s). $$</p>
+      <p>Take $X = C_b(S)$, the space of bounded continuous functions on $S$ with sup-norm — a complete metric space. The <b>Bellman operator</b> $T$ is a contraction with modulus $\beta$:</p>
+      <p>$$ \|T V_1 - T V_2\|_\infty \;\le\; \beta\, \|V_1 - V_2\|_\infty. $$</p>
+      <p>By Banach's theorem, $T$ has a <em>unique</em> fixed point $V^* \in C_b(S)$ — the value function — and for any initial guess $V_0$, the <b>value iteration</b> $V_{n+1} = T V_n$ converges to $V^*$ at geometric rate, with $\|V_n - V^*\|_\infty \le \beta^n / (1-\beta) \cdot \|V_1 - V_0\|_\infty$.</p>
+      <p><em>Intuition.</em> The discount factor $\beta < 1$ literally <em>is</em> the contraction modulus — tomorrow's payoff difference is worth only $\beta$ times today's. Banach's theorem then guarantees three things at once: <em>(i)</em> the value function exists; <em>(ii)</em> it is the only solution to the Bellman equation; <em>(iii)</em> we can compute it by iterating from <em>any</em> starting guess, with an a-priori geometric error bound. This is the theoretical foundation of essentially every dynamic-programming algorithm in economics, and equally of value iteration in reinforcement learning.</p>
+
+      <h4>CN —— 动态规划中的 Bellman 方程</h4>
+      <p>考虑无限期贴现决策问题:状态 $s \in S$、行动 $a \in A(s)$、单期效用 $u(s,a)$、转移核 $Q(\cdot \mid s,a)$、贴现率 $\beta \in [0,1)$。值函数 $V$ 满足 <b>Bellman 方程</b></p>
+      <p>$$ V(s) \;=\; \max_{a \in A(s)} \Bigl\{\, u(s,a) + \beta \int V(s')\, Q(ds' \mid s, a) \,\Bigr\} \;=:\; (T V)(s). $$</p>
+      <p>取 $X = C_b(S)$ 配 sup 范数(完备)。直接验证可得 <b>Bellman 算子</b> $T$ 是压缩常数为 $\beta$ 的压缩映射:$\|TV_1 - TV_2\|_\infty \le \beta\, \|V_1 - V_2\|_\infty$。由 Banach 定理:</p>
+      <p>(1) 值函数 $V^*$ <b>唯一存在</b>; (2) 任取初值 $V_0$,<b>值迭代</b> $V_{n+1} = T V_n$ 收敛至 $V^*$; (3) 误差 $\|V_n - V^*\|_\infty \le \dfrac{\beta^n}{1-\beta}\, \|V_1 - V_0\|_\infty$,几何速率收敛。</p>
+      <p><em>直觉。</em>贴现率 $\beta$ 直接就是压缩常数——未来每被推迟一期就被打 $\beta$ 折,所以两个候选值函数的差距每经一次 Bellman 算子就缩小 $\beta$ 倍。Banach 定理同时给了三件事:存在性、唯一性、可证明收敛的迭代算法。这是从最优增长模型、消费–储蓄问题,到强化学习中值迭代算法的全部数学基础。<b>贴现率本身就是收敛速率</b>——这是动态宏观经济学最简洁的等式之一。</p>
+
+    </div>
+  </section>
+
+  <footer class="bot">
+    <div class="epigraph">Continuity gives existence — contraction gives an algorithm.</div>
+    <div class="credit">由 Karcen Zheng 制作,<a href="https://karcen.github.io/zhengjiacheng.github.io/" target="_blank" rel="noopener">联系我</a></div>
+  </footer>
+
+</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// Theme toggle
+// ============================================================
+(function () {
+  const btn = document.getElementById('themeToggle');
+  if (!btn) return;
+
+  function currentTheme() {
+    const explicit = document.documentElement.getAttribute('data-theme');
+    if (explicit === 'dark' || explicit === 'light') return explicit;
+    return window.matchMedia &&
+           window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem('fpt-theme', t); } catch (e) {}
+    // Trigger canvas redraws (each canvas listens for 'resize')
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  btn.addEventListener('click', () => {
+    setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // If user has not manually overridden, follow system changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      let saved = null;
+      try { saved = localStorage.getItem('fpt-theme'); } catch (e) {}
+      if (!saved) window.dispatchEvent(new Event('resize'));
+    });
+  }
+})();
+
+function css(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = Math.max(1, Math.round(rect.width  * dpr));
+  canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+function box(W, H) {
+  const pad = 28;
+  const size = Math.max(20, Math.min(W, H) - 2 * pad);
+  return { x0: (W - size) / 2, y0: (H - size) / 2, s: size };
+}
+
+function drawFrame(ctx, b) {
+  ctx.fillStyle = css('--canvas-bg');
+  ctx.fillRect(b.x0, b.y0, b.s, b.s);
+  ctx.strokeStyle = css('--grid');
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const t = i / 10;
+    ctx.beginPath();
+    ctx.moveTo(b.x0 + t * b.s, b.y0);
+    ctx.lineTo(b.x0 + t * b.s, b.y0 + b.s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(b.x0,        b.y0 + t * b.s);
+    ctx.lineTo(b.x0 + b.s,  b.y0 + t * b.s);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = css('--text');
+  ctx.lineWidth = 1.2;
+  ctx.strokeRect(b.x0 + 0.5, b.y0 + 0.5, b.s - 1, b.s - 1);
+
+  ctx.fillStyle = css('--muted');
+  ctx.font = '10px ' + css('--mono');
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('0', b.x0 - 4, b.y0 + b.s);
+  ctx.fillText('1', b.x0 - 4, b.y0);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('0', b.x0,         b.y0 + b.s + 4);
+  ctx.fillText('1', b.x0 + b.s,   b.y0 + b.s + 4);
+}
+
+function drawArrow(ctx, ax, ay, bx, by, head) {
+  head = head || 4.5;
+  ctx.beginPath();
+  ctx.moveTo(ax, ay);
+  ctx.lineTo(bx, by);
+  ctx.stroke();
+  const dx = bx - ax, dy = by - ay;
+  const L = Math.hypot(dx, dy);
+  if (L < 2) return;
+  const a = Math.atan2(dy, dx);
+  ctx.beginPath();
+  ctx.moveTo(bx, by);
+  ctx.lineTo(bx - head * Math.cos(a - Math.PI / 6), by - head * Math.sin(a - Math.PI / 6));
+  ctx.lineTo(bx - head * Math.cos(a + Math.PI / 6), by - head * Math.sin(a + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawDot(ctx, x, y, r, fill, stroke) {
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+// ============================================================
+// I — Brouwer
+// ============================================================
+(function () {
+  const canvas = document.getElementById('brouwerCanvas');
+  let ctx, W, H;
+  let alpha = 0.70, theta = 0;
+  let target = { x: 0.5, y: 0.5 };
+
+  const $a = document.getElementById('bAlpha');
+  const $t = document.getElementById('bTheta');
+  const $av = document.getElementById('bAlphaVal');
+  const $tv = document.getElementById('bThetaVal');
+  const $r = document.getElementById('bReset');
+
+  $a.addEventListener('input', () => { alpha = +$a.value; $av.textContent = alpha.toFixed(2); draw(); });
+  $t.addEventListener('input', () => { theta = +$t.value * Math.PI / 180; $tv.textContent = $t.value + '°'; draw(); });
+  $r.addEventListener('click', () => {
+    alpha = 0.7; theta = 0; target = { x: 0.5, y: 0.5 };
+    $a.value = 0.7; $av.textContent = '0.70';
+    $t.value = 0;   $tv.textContent = '0°';
+    draw();
+  });
+
+  function dim() { const r = canvas.getBoundingClientRect(); W = r.width; H = r.height; }
+  function toCanvas(p, b) { return { x: b.x0 + p.x * b.s, y: b.y0 + (1 - p.y) * b.s }; }
+  function toLogical(c, b) { return { x: (c.x - b.x0) / b.s, y: 1 - (c.y - b.y0) / b.s }; }
+  function f(p) {
+    const dx = p.x - target.x, dy = p.y - target.y;
+    const c = Math.cos(theta), s = Math.sin(theta);
+    return { x: target.x + alpha * (c * dx - s * dy), y: target.y + alpha * (s * dx + c * dy) };
+  }
+
+  function draw() {
+    ctx = setupCanvas(canvas); dim();
+    ctx.clearRect(0, 0, W, H);
+    const b = box(W, H);
+    drawFrame(ctx, b);
+
+    ctx.strokeStyle = css('--vec');
+    ctx.fillStyle = css('--vec');
+    ctx.lineWidth = 1;
+    const N = 13;
+    for (let i = 1; i < N; i++) {
+      for (let j = 1; j < N; j++) {
+        const p = { x: i / N, y: j / N };
+        const fp = f(p);
+        const a = toCanvas(p, b);
+        const c = toCanvas(fp, b);
+        const len = Math.hypot(c.x - a.x, c.y - a.y);
+        if (len < 1.5) drawDot(ctx, a.x, a.y, 1.4, css('--vec'));
+        else { ctx.globalAlpha = 0.85; drawArrow(ctx, a.x, a.y, c.x, c.y, 4); ctx.globalAlpha = 1; }
+      }
+    }
+
+    const fp = toCanvas(target, b);
+    drawDot(ctx, fp.x, fp.y, 8, css('--crimson'), css('--canvas-bg'));
+    ctx.fillStyle = css('--text');
+    ctx.font = '12px ' + css('--mono');
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('x* (' + target.x.toFixed(2) + ', ' + target.y.toFixed(2) + ')', fp.x + 12, fp.y - 10);
+
+    ctx.fillStyle = css('--muted');
+    ctx.font = "italic 11px " + css('--serif');
+    ctx.textAlign = 'left';
+    ctx.fillText('K = [0,1]² ⊂ ℝ²', b.x0 + 6, b.y0 + 14);
+  }
+
+  let dragging = false;
+  function pos(ev) { const r = canvas.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+  canvas.addEventListener('pointerdown', (ev) => {
+    dim(); const b = box(W, H); const p = pos(ev);
+    const fp = toCanvas(target, b);
+    if (Math.hypot(p.x - fp.x, p.y - fp.y) < 16) {
+      dragging = true; canvas.setPointerCapture(ev.pointerId);
+    } else {
+      const lp = toLogical(p, b);
+      if (lp.x > 0.05 && lp.x < 0.95 && lp.y > 0.05 && lp.y < 0.95) {
+        target.x = lp.x; target.y = lp.y; draw();
+      }
+    }
+  });
+  canvas.addEventListener('pointermove', (ev) => {
+    if (!dragging) return;
+    const b = box(W, H);
+    const lp = toLogical(pos(ev), b);
+    target.x = Math.max(0.05, Math.min(0.95, lp.x));
+    target.y = Math.max(0.05, Math.min(0.95, lp.y));
+    draw();
+  });
+  canvas.addEventListener('pointerup',     () => { dragging = false; });
+  canvas.addEventListener('pointercancel', () => { dragging = false; });
+
+  window.addEventListener('resize', draw);
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  draw();
+})();
+
+// ============================================================
+// II — Kakutani
+// ============================================================
+(function () {
+  const canvas = document.getElementById('kakutaniCanvas');
+  let ctx, W, H;
+  let a = 0.50, b1 = 0.75, b2 = 0.25;
+  let asFunction = false;
+
+  const $a  = document.getElementById('kA');
+  const $b1 = document.getElementById('kB1');
+  const $b2 = document.getElementById('kB2');
+  const $f  = document.getElementById('kFunc');
+  const $av = document.getElementById('kAVal');
+  const $1v = document.getElementById('kB1Val');
+  const $2v = document.getElementById('kB2Val');
+
+  $a.addEventListener('input',  () => { a  = +$a.value;  $av.textContent = a.toFixed(2);  draw(); });
+  $b1.addEventListener('input', () => { b1 = +$b1.value; $1v.textContent = b1.toFixed(2); draw(); });
+  $b2.addEventListener('input', () => { b2 = +$b2.value; $2v.textContent = b2.toFixed(2); draw(); });
+  $f.addEventListener('change', () => { asFunction = $f.checked; draw(); });
+
+  function dim() { const r = canvas.getBoundingClientRect(); W = r.width; H = r.height; }
+  function toCanvas(p, b) { return { x: b.x0 + p.x * b.s, y: b.y0 + (1 - p.y) * b.s }; }
+
+  function draw() {
+    ctx = setupCanvas(canvas); dim();
+    ctx.clearRect(0, 0, W, H);
+    const b = box(W, H);
+    drawFrame(ctx, b);
+
+    ctx.strokeStyle = css('--ochre');
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([5, 4]);
+    const c00 = toCanvas({ x: 0, y: 0 }, b);
+    const c11 = toCanvas({ x: 1, y: 1 }, b);
+    ctx.beginPath(); ctx.moveTo(c00.x, c00.y); ctx.lineTo(c11.x, c11.y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = css('--ochre');
+    ctx.font = "italic 12px " + css('--serif');
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const lab = toCanvas({ x: 0.92, y: 0.94 }, b);
+    ctx.fillText('y = x', lab.x, lab.y);
+
+    ctx.strokeStyle = css('--accent');
+    ctx.lineWidth = 3;
+    const p1 = toCanvas({ x: 0,  y: b1 }, b);
+    const p2 = toCanvas({ x: a,  y: b1 }, b);
+    const p3 = toCanvas({ x: a,  y: b2 }, b);
+    const p4 = toCanvas({ x: 1,  y: b2 }, b);
+
+    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+
+    drawDot(ctx, p1.x, p1.y, 3, css('--accent'));
+    drawDot(ctx, p4.x, p4.y, 3, css('--accent'));
+
+    if (!asFunction) {
+      ctx.strokeStyle = css('--accent'); ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p2.x - 5, p2.y); ctx.lineTo(p2.x + 5, p2.y);
+      ctx.moveTo(p3.x - 5, p3.y); ctx.lineTo(p3.x + 5, p3.y);
+      ctx.stroke();
+    } else {
+      drawDot(ctx, p2.x, p2.y, 4, css('--canvas-bg'), css('--accent'));
+      drawDot(ctx, p3.x, p3.y, 3, css('--accent'));
+    }
+
+    const fps = [];
+    if (b1 >= 0 && b1 <= a) fps.push({ x: b1, y: b1 });
+    if (b2 >  a && b2 <= 1) fps.push({ x: b2, y: b2 });
+    if (!asFunction && a >= b2 && a <= b1) fps.push({ x: a, y: a });
+
+    for (const fp of fps) {
+      const c = toCanvas(fp, b);
+      drawDot(ctx, c.x, c.y, 7, css('--crimson'), css('--canvas-bg'));
+    }
+
+    if (fps.length === 0) {
+      ctx.fillStyle = css('--crimson');
+      ctx.font = "italic 12px " + css('--serif');
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText('No fixed point — Brouwer fails here.', b.x0 + 8, b.y0 + 8);
+    } else {
+      ctx.fillStyle = css('--muted');
+      ctx.font = "italic 11px " + css('--serif');
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText(fps.length + ' fixed point' + (fps.length > 1 ? 's' : '') + ' · ' +
+        (asFunction ? 'function' : 'correspondence'),
+        b.x0 + 8, b.y0 + 8);
+    }
+
+    ctx.fillStyle = css('--accent');
+    ctx.font = "italic 12px " + css('--serif');
+    ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    const lp = toCanvas({ x: 0.04, y: b1 }, b);
+    ctx.fillText('φ(x)', lp.x, lp.y - 4);
+  }
+
+  window.addEventListener('resize', draw);
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  draw();
+})();
+
+// ============================================================
+// III — Banach
+// ============================================================
+(function () {
+  const canvas = document.getElementById('banachCanvas');
+  let ctx, W, H;
+  let L = 0.75, theta = Math.PI / 4;
+  const fixedPoint = { x: 0.5, y: 0.5 };
+  let trajectory = [];
+  let timer = null;
+
+  const $L  = document.getElementById('nL');
+  const $T  = document.getElementById('nTheta');
+  const $Lv = document.getElementById('nLVal');
+  const $Tv = document.getElementById('nThetaVal');
+  const $run = document.getElementById('nRun');
+  const $rst = document.getElementById('nReset');
+
+  $L.addEventListener('input', () => { L = +$L.value; $Lv.textContent = L.toFixed(2); draw(); });
+  $T.addEventListener('input', () => { theta = +$T.value * Math.PI / 180; $Tv.textContent = $T.value + '°'; draw(); });
+  $rst.addEventListener('click', () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    trajectory = []; draw();
+  });
+  $run.addEventListener('click', () => {
+    if (trajectory.length === 0) trajectory.push({ x: 0.08, y: 0.08 });
+    if (timer) { clearTimeout(timer); timer = null; }
+    iterate();
+  });
+
+  function dim() { const r = canvas.getBoundingClientRect(); W = r.width; H = r.height; }
+  function toCanvas(p, b) { return { x: b.x0 + p.x * b.s, y: b.y0 + (1 - p.y) * b.s }; }
+  function toLogical(c, b) { return { x: (c.x - b.x0) / b.s, y: 1 - (c.y - b.y0) / b.s }; }
+  function f(p) {
+    const dx = p.x - fixedPoint.x, dy = p.y - fixedPoint.y;
+    const c = Math.cos(theta), s = Math.sin(theta);
+    return { x: fixedPoint.x + L * (c * dx - s * dy), y: fixedPoint.y + L * (s * dx + c * dy) };
+  }
+
+  function iterate() {
+    if (trajectory.length === 0) return;
+    const last = trajectory[trajectory.length - 1];
+    const next = f(last);
+    const d = Math.hypot(next.x - last.x, next.y - last.y);
+    if (d < 0.0008 || trajectory.length > 80) { draw(); return; }
+    trajectory.push(next); draw();
+    timer = setTimeout(iterate, 110);
+  }
+
+  function draw() {
+    ctx = setupCanvas(canvas); dim();
+    ctx.clearRect(0, 0, W, H);
+    const b = box(W, H);
+    drawFrame(ctx, b);
+
+    if (trajectory.length > 0) {
+      ctx.strokeStyle = css('--teal');
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      const p0 = toCanvas(trajectory[0], b);
+      ctx.moveTo(p0.x, p0.y);
+      for (let i = 1; i < trajectory.length; i++) {
+        const p = toCanvas(trajectory[i], b);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = css('--teal');
+      for (let i = 0; i < trajectory.length - 1; i++) {
+        if (i % 2 !== 0) continue;
+        const a = toCanvas(trajectory[i], b);
+        const c = toCanvas(trajectory[i + 1], b);
+        const ang = Math.atan2(c.y - a.y, c.x - a.x);
+        const mx = (a.x + c.x) / 2, my = (a.y + c.y) / 2;
+        const ah = 4;
+        ctx.beginPath();
+        ctx.moveTo(mx + ah * Math.cos(ang), my + ah * Math.sin(ang));
+        ctx.lineTo(mx - ah * 0.7 * Math.cos(ang - Math.PI / 6), my - ah * 0.7 * Math.sin(ang - Math.PI / 6));
+        ctx.lineTo(mx - ah * 0.7 * Math.cos(ang + Math.PI / 6), my - ah * 0.7 * Math.sin(ang + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      for (let i = 0; i < trajectory.length; i++) {
+        const p = toCanvas(trajectory[i], b);
+        if (i === 0) {
+          drawDot(ctx, p.x, p.y, 5, css('--ochre'), css('--canvas-bg'));
+          ctx.fillStyle = css('--muted');
+          ctx.font = '11px ' + css('--mono');
+          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText('x₀', p.x + 8, p.y - 8);
+        } else {
+          drawDot(ctx, p.x, p.y, 2.6, css('--teal'));
+        }
+      }
+    } else {
+      ctx.fillStyle = css('--muted');
+      ctx.font = "italic 12px " + css('--serif');
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Click anywhere to drop a starting point x₀.', b.x0 + b.s / 2, b.y0 + b.s / 2 - 30);
+    }
+
+    const fp = toCanvas(fixedPoint, b);
+    drawDot(ctx, fp.x, fp.y, 8, css('--crimson'), css('--canvas-bg'));
+    ctx.fillStyle = css('--text');
+    ctx.font = '12px ' + css('--mono');
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('x*', fp.x + 12, fp.y - 10);
+
+    if (trajectory.length > 0) {
+      const last = trajectory[trajectory.length - 1];
+      const dist = Math.hypot(last.x - fixedPoint.x, last.y - fixedPoint.y);
+      ctx.fillStyle = css('--muted');
+      ctx.font = '11px ' + css('--mono');
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText('n = ' + (trajectory.length - 1) + '   ‖xₙ − x*‖ = ' + dist.toFixed(5),
+                   b.x0 + 8, b.y0 + 8);
+    }
+  }
+
+  function pos(ev) { const r = canvas.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+
+  canvas.addEventListener('click', (ev) => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    dim();
+    const b = box(W, H);
+    const lp = toLogical(pos(ev), b);
+    if (lp.x < 0 || lp.x > 1 || lp.y < 0 || lp.y > 1) return;
+    trajectory = [{ x: lp.x, y: lp.y }];
+    draw();
+    timer = setTimeout(iterate, 200);
+  });
+
+  window.addEventListener('resize', draw);
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  draw();
+})();
+</script>
+</body>
+</html>
